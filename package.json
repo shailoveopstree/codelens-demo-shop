@@ -1,0 +1,17 @@
+{
+  "name": "demo-shop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage"
+  },
+  "dependencies": { "express": "^4.19.2" },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.4",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  }
+}
