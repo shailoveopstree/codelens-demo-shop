@@ -18,6 +18,7 @@ export function createSession(userId: string): Session {
   return session;
 }
 
+// Fixed: previously used > which let a session live one tick past expiry.
 export function isExpired(session: Session): boolean {
   return Date.now() >= session.expiresAt;
 }
