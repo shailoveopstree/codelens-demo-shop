@@ -9,12 +9,14 @@ export interface Session {
   userId: string;
   createdAt: number;
   expiresAt: number;
+  lastSeenIp?: string;
 }
 export interface Charge {
   id: string;
   customerId: string;
   amount: number;
   status: "authorized" | "captured" | "refunded" | "declined";
+  refundReason?: string;
 }
 export interface Order {
   id: string;

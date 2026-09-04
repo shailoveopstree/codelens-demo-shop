@@ -4,17 +4,23 @@ import { log } from "../lib/logger.js";
 
 const TTL_MS = 60 * 60 * 1000; // 1h
 
+export interface SessionOptions {
+  /** IP the session was created from, recorded for auditing. */
+  ip?: string;
+}
+
 /** Create a session for a user. */
-export function createSession(userId: string): Session {
+export function createSession(userId: string, opts: SessionOptions = {}): Session {
   const now = Date.now();
   const session: Session = {
     token: newId("sess"),
     userId,
     createdAt: now,
     expiresAt: now + TTL_MS,
+    lastSeenIp: opts.ip,
   };
   db.sessions.set(session.token, session);
-  log("info", "session created", { userId });
+  log("info", "session created", { userId, ip: opts.ip });
   return session;
 }
 
