@@ -1,0 +1,5 @@
+# Demo-shop code owners
+*                       @shailoveopstree
+/src/auth/              @shailoveopstree @security-reviewers
+/src/payments/          @shailoveopstree @payments-reviewers
+/src/notifications/     @shailoveopstree
