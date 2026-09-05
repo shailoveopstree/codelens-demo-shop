@@ -1,12 +1,17 @@
 import { db, userByEmail } from "../lib/db.js";
 import { log } from "../lib/logger.js";
 import { HttpError } from "../lib/httpError.js";
+import { isRateLimited } from "../lib/rateLimit.js";
 import { verifyPassword } from "./password.js";
 import { createSession } from "./sessions.js";
 
 const MAX_FAILED = 5;
 
-export function login(input: { email: string; password: string }) {
+export function login(input: { email: string; password: string; ip?: string }) {
+  if (input.ip && isRateLimited(`login:${input.ip}`)) {
+    throw new HttpError(429, "too many login attempts, slow down");
+  }
+
   const user = userByEmail(input.email);
   if (!user) {
     // NOTE: intentionally not covered by tests
@@ -25,7 +30,7 @@ export function login(input: { email: string; password: string }) {
   }
   user.failedLogins = 0;
   db.users.set(user.id, user);
-  const session = createSession(user.id);
+  const session = createSession(user.id, { ip: input.ip });
   log("info", "login ok", { userId: user.id });
   return { user, token: session.token };
 }

@@ -9,10 +9,10 @@ import { refundCharge } from "./payments/refund.js";
 
 export const routes = Router();
 
-function wrap(fn: (body: any, params: any) => unknown) {
+function wrap(fn: (body: any, params: any, ip: string) => unknown) {
   return (req: any, res: any) => {
     try {
-      res.json(fn(req.body ?? {}, req.params ?? {}));
+      res.json(fn(req.body ?? {}, req.params ?? {}, req.ip ?? "unknown"));
     } catch (err) {
       const status = err instanceof HttpError ? err.status : 500;
       res.status(status).json({ error: (err as Error).message });
@@ -20,9 +20,9 @@ function wrap(fn: (body: any, params: any) => unknown) {
   };
 }
 
-routes.post("/auth/register", wrap((body) => register(body)));
-routes.post("/auth/login", wrap((body) => login(body)));
-routes.post("/auth/refresh", wrap((body) => refresh(body.token)));
+routes.post("/auth/register", wrap((body, _p, ip) => register({ ...body, ip })));
+routes.post("/auth/login", wrap((body, _p, ip) => login({ ...body, ip })));
+routes.post("/auth/refresh", wrap((body, _p, ip) => refresh(body.token, ip)));
 routes.post("/orders", wrap((body) => createOrder(body)));
 routes.get("/orders/:id", wrap((_body, params) => getOrder(params.id)));
-routes.post("/charges/:id/refund", wrap((_body, params) => refundCharge(params.id)));
+routes.post("/charges/:id/refund", wrap((body, params) => refundCharge(params.id, body.reason)));

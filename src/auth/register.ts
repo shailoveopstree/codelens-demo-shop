@@ -5,7 +5,7 @@ import { HttpError } from "../lib/httpError.js";
 import { hashPassword } from "./password.js";
 import { createSession } from "./sessions.js";
 
-export function register(input: { email: string; password: string }) {
+export function register(input: { email: string; password: string; ip?: string }) {
   if (userByEmail(input.email)) {
     throw new HttpError(409, "email already registered");
   }
@@ -17,6 +17,6 @@ export function register(input: { email: string; password: string }) {
   };
   db.users.set(user.id, user);
   log("info", "user registered", { userId: user.id });
-  const session = createSession(user.id);
+  const session = createSession(user.id, { ip: input.ip });
   return { user, token: session.token };
 }
