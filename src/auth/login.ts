@@ -1,5 +1,5 @@
 import { userByEmail } from "../lib/db.js";
-import { log } from "../lib/logger.js";
+import { log, redactEmail } from "../lib/logger.js";
 import { HttpError } from "../lib/httpError.js";
 import { verifyPassword } from "./password.js";
 import { createSession } from "./sessions.js";
@@ -8,7 +8,7 @@ import { isLockedOut, recordFailure, resetFailures } from "./lockout.js";
 export function login(input: { email: string; password: string }) {
   const user = userByEmail(input.email);
   if (!user) {
-    log("warn", "login for unknown email", { email: input.email });
+    log("warn", "login for unknown email", { email: redactEmail(input.email) });
     throw new HttpError(401, "invalid credentials");
   }
   if (isLockedOut(user)) {
