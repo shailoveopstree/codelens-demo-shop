@@ -6,7 +6,12 @@ import { chargeCard } from "../payments/charge.js";
 import { sendReceipt } from "../notifications/email.js";
 import { priceOf } from "../catalog.js";
 
-export function createOrder(input: { userId: string; email: string; items: string[] }): Order {
+export function createOrder(input: {
+  userId: string;
+  email: string;
+  items: string[];
+  metadata?: Record<string, unknown>;
+}): Order {
   if (input.items.length === 0) throw new HttpError(400, "no items");
   const total = input.items.reduce((sum, item) => sum + priceOf(item), 0);
   const charge = chargeCard({ customerId: input.userId, amount: total });
@@ -17,6 +22,9 @@ export function createOrder(input: { userId: string; email: string; items: strin
     chargeId: charge.id,
     total,
   };
+  if (input.metadata && Object.keys(input.metadata).length > 0) {
+    order.metadata = input.metadata;
+  }
   db.orders.set(order.id, order);
   sendReceipt(order, input.email);
   log("info", "order created", { orderId: order.id, total });

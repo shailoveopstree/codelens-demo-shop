@@ -22,6 +22,7 @@ export interface Order {
   items: string[];
   chargeId: string;
   total: number;
+  metadata?: Record<string, unknown>;
 }
 
 /** In-memory store. Reset between test files. */
