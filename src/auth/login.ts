@@ -13,11 +13,11 @@ export function login(input: { email: string; password: string }) {
   }
   if (isLockedOut(user)) {
     log("warn", "login blocked - too many attempts", { userId: user.id });
-    throw new HttpError(429, "account temporarily locked");
+    throw new HttpError(429, "account temporarily locked", "auth.locked");
   }
   if (!verifyPassword(input.password, user.passwordHash)) {
     recordFailure(user);
-    throw new HttpError(401, "invalid credentials");
+    throw new HttpError(401, "invalid credentials", "auth.bad_password");
   }
   resetFailures(user);
   const session = createSession(user.id);

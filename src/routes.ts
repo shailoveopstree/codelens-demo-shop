@@ -16,7 +16,8 @@ function wrap(fn: (body: any, params: any) => unknown) {
       res.json(fn(req.body ?? {}, req.params ?? {}));
     } catch (err) {
       const status = err instanceof HttpError ? err.status : 500;
-      res.status(status).json({ error: (err as Error).message });
+      const code = err instanceof HttpError ? err.code : "internal";
+      res.status(status).json({ error: (err as Error).message, code });
     }
   };
 }
