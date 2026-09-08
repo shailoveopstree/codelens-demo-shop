@@ -36,3 +36,15 @@ export function getSession(token: string): Session | undefined {
 export function revokeSession(token: string): void {
   db.sessions.delete(token);
 }
+
+/** Drop every session belonging to a user (e.g. after an admin unlock). */
+export function revokeAllForUser(userId: string): number {
+  let revoked = 0;
+  for (const [token, session] of db.sessions) {
+    if (session.userId === userId) {
+      db.sessions.delete(token);
+      revoked += 1;
+    }
+  }
+  return revoked;
+}
